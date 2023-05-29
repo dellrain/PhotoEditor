@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Очень хороший фоторедактор</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            margin-top: 70px;
+        }
+
+        h1 {
+            margin-bottom: 60px;
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 500px;
+            width: 600px;
+            margin-top: 20px;
+            margin-left: 50px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f8f8;
+            cursor: pointer;
+        }
+
+        .image-container:hover {
+            background-color: #f0f0f0;
+        }
+
+        .image-container span {
+            font-size: 20px;
+            color: #999;
+            margin: 0 30px;
+        }
+
+        .image-container img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        #image {
+            display: none;
+        }
+
+        .effect-label {
+            margin-top: 10px;
+        }
+
+        #first-title {
+            margin: 0;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Функция для мгновенного отображения превью изображения
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var imageContainer = $(input).parent();
+                    var image = imageContainer.find('img');
+
+                    image.attr('src', e.target.result);
+                    imageContainer.find('span').hide();
+                    imageContainer.css('background-color', 'transparent');
+                    imageContainer.css('border', 'none');
+                    imageContainer.css('cursor', 'auto');
+                    imageContainer.off('click');
+                    imageContainer.find('input[type="file"]').remove();
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Функция для изменения яркости, контрастности, насыщенности и оттенка в реальном времени
+        function adjustImage() {
+            var brightness = parseFloat($('#brightness').val());
+            var contrast = parseFloat($('#contrast').val());
+            var saturation = parseFloat($('#saturation').val());
+            var hue = parseFloat($('#hue').val());
+
+            // Проверяем, если значения range slider'ов отличаются от значений по умолчанию
+            if (brightness !== 1 || contrast !== 1 || saturation !== 1 || hue !== 0) {
+                // Выбираем эффект "Custom"
+                $('#effect').val('custom');
+            }
+
+            $('.image-container img').css('filter', 'brightness(' + brightness + ') contrast(' + contrast + ') saturate(' + saturation + ') hue-rotate(' + hue + 'deg)');
+        }
+
+        // Обработчик клика на блок загрузки изображения
+        $(document).ready(function () {
+            $('.image-container').on('click', function () {
+                $(this).find('input[type="file"]').trigger('click');
+            });
+
+            $('#image').on('change', function () {
+                previewImage(this);
+            });
+        });
+
+        function applyEffect() {
+            var effect = $('#effect').val();
+
+            switch (effect) {
+                case 'none':
+                    $('.image-container img').css('filter', 'none');
+                    // Сброс значений range sliderов
+                    $('#brightness').val(1);
+                    $('#contrast').val(1);
+                    $('#saturation').val(1);
+                    $('#hue').val(0);
+                    break;
+                case 'blur':
+                    $('.image-container img').css('filter', 'brightness(1) contrast(1) saturate(1) hue-rotate(0deg) blur(5px)');
+                    break;
+                case 'black-white':
+                    $('.image-container img').css('filter', 'brightness(1) contrast(1) saturate(0) hue-rotate(0deg)');
+                    break;
+                case 'sepia':
+                    $('.image-container img').css('filter', 'brightness(1) contrast(1) saturate(1) hue-rotate(0deg) sepia(1)');
+                    break;
+                case 'negative':
+                    $('.image-container img').css('filter', 'brightness(1) contrast(1) saturate(1) hue-rotate(0deg) invert(1)');
+                    break;
+                case 'vintage':
+                    $('.image-container img').css('filter', 'brightness(1) contrast(0.8) saturate(0.8) hue-rotate(0deg) sepia(0.5)');
+                    break;
+                case 'toning':
+                    $('.image-container img').css('filter', 'brightness(1) contrast(1) saturate(1) hue-rotate(0deg) hue-rotate(30deg)');
+                    break;
+                case 'pop-art':
+                    $('.image-container img').css('filter', 'brightness(1) contrast(1) saturate(1) hue-rotate(0deg) sepia(0.5) contrast(200%)');
+                    break;
+                case 'saturation':
+                    $('.image-container img').css('filter', 'brightness(1) contrast(1) saturate(2) hue-rotate(0deg)');
+                    break;
+            }
+        }
+
+        // Функция для скачивания измененного изображения
+// Функция для скачивания измененного изображения
+function downloadImage() {
+    // Получаем URL измененного изображения
+    var canvas = document.createElement('canvas');
+    var image = document.querySelector('.image-container img');
+    canvas.width = image.naturalWidth; // использовать naturalWidth для получения исходной ширины
+    canvas.height = image.naturalHeight; // использовать naturalHeight для получения исходной высоты
+    var context = canvas.getContext('2d');
+    context.filter = image.style.filter;
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    // Преобразуем изображение в Data URL
+    var imageUrl = canvas.toDataURL('image/jpeg');
+
+    // Создаем ссылку для скачивания
+    var link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = 'edited_image.jpg';
+
+    // Добавляем ссылку на страницу и автоматически кликаем по ней для скачивания
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h1 id="first-title">Фоторедактор с использованием Flask</h1>
+        <h1>ВГУ ФКН 3 группа Ткаченко Алексей Юрьевич</h1>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="brightness">Яркость:</label>
+                    <input type="range" class="form-control-range" name="brightness" id="brightness" min="0" max="2"
+                        step="0.1" value="1" oninput="adjustImage()" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contrast">Контрастность:</label>
+                    <input type="range" class="form-control-range" name="contrast" id="contrast" min="0" max="2"
+                        step="0.1" value="1" oninput="adjustImage()" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="saturation">Насыщенность:</label>
+                    <input type="range" class="form-control-range" name="saturation" id="saturation" min="0" max="2"
+                        step="0.1" value="1" oninput="adjustImage()" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="hue">Оттенок (градусы):</label>
+                    <input type="range" class="form-control-range" name="hue" id="hue" min="0" max="360" value="0"
+                        oninput="adjustImage()" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="effect-label">Выберите эффект:</label>
+                    <select class="form-control" id="effect" onchange="applyEffect()">
+                        <option value="none">Без эффекта</option>
+                        <option value="blur">Размытие</option>
+                        <option value="black-white">Черно-белый</option>
+                        <option value="sepia">Сепия</option>
+                        <option value="negative">Негатив</option>
+                        <option value="vintage">Винтаж</option>
+                        <option value="toning">Тонирование</option>
+                        <option value="pop-art">Эффект поп-арта</option>
+                        <option value="saturation">Насыщенность</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <input type="button" class="btn btn-primary" value="Скачать" onclick="downloadImage()">
+            </div>
+
+            <div class="col-md-8">
+                <label for="image" id="pic1" class="image-container">
+                    <input type="file" name="image" id="image" accept="image/*" onchange="previewImage(this)" required>
+                    <img src="" alt="">
+                    <span>Нажмите для загрузки изображения</span>
+                </label>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
