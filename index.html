@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Очень хороший фоторедактор</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 id="first-title">Фоторедактор</h1>
+        <h1>ВГУ ФКН 3 группа Ткаченко Алексей Юрьевич</h1>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="brightness">Яркость:</label>
+                    <input type="range" class="form-control-range" name="brightness" id="brightness" min="0" max="2"
+                        step="0.1" value="1" oninput="adjustImage()" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contrast">Контрастность:</label>
+                    <input type="range" class="form-control-range" name="contrast" id="contrast" min="0" max="2"
+                        step="0.1" value="1" oninput="adjustImage()" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="saturation">Насыщенность:</label>
+                    <input type="range" class="form-control-range" name="saturation" id="saturation" min="0" max="2"
+                        step="0.1" value="1" oninput="adjustImage()" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="hue">Оттенок (градусы):</label>
+                    <input type="range" class="form-control-range" name="hue" id="hue" min="0" max="360" value="0"
+                        oninput="adjustImage()" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="effect-label">Выберите эффект:</label>
+                    <select class="form-control" id="effect" onchange="applyEffect()">
+                        <option value="none">Без эффекта</option>
+                        <option value="blur">Размытие</option>
+                        <option value="black-white">Черно-белый</option>
+                        <option value="sepia">Сепия</option>
+                        <option value="negative">Негатив</option>
+                        <option value="vintage">Винтаж</option>
+                        <option value="toning">Тонирование</option>
+                        <option value="pop-art">Эффект поп-арта</option>
+                        <option value="saturation">Насыщенность</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <input type="button" class="btn btn-primary" value="Скачать" onclick="downloadImage()">
+            </div>
+
+            <div class="col-md-8">
+                <label for="image" id="pic1" class="image-container">
+                    <input type="file" name="image" id="image" accept="image/*" onchange="previewImage(this)" required>
+                    <img src="" alt="">
+                    <span>Нажмите для загрузки изображения</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="JS/script.js"></script>
+</body>
+
+</html>
